@@ -13,6 +13,9 @@ try {
         if (err) throw err;
         console.log("Connected!");
     })
+    db.on('error', function(err) {
+      console.log("[mysql error]",err);
+    });
   } catch (err) {
     console.error(err)
   }

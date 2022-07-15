@@ -1,8 +1,8 @@
 const db = require('../database');
 const mailer = require('../mailer');
-var date_time = new Date().toISOString('en-US', {
+var date_time = new Date().toLocaleString('en-GB', {
     timeZone: 'Asia/Jakarta'
-}).replace(/T/, ' ').replace(/\..+/, '')
+}).replace('/','-').replace('/','-')
 module.exports = {
     // fungsi menambah role
     add_role: (req, res) => {

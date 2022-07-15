@@ -2,21 +2,28 @@ const db = require('../database');
 const fs = require('fs');
 var date_time = new Date().toLocaleString('en-GB', {
     timeZone: 'Asia/Jakarta'
-}).replace('/','-').replace('/','-')
+}).replace('/', '-').replace('/', '-')
 module.exports = {
-    //fungsi untuk add kategori
-    add_kategori: (req, res) => {
+    //fungsi untuk add produk
+    add_produk: (req, res) => {
+        //fungsi untuk add berita
         try {
             const file = req.file.filename;
-            const nama = req.body.nama
-            const sql = "insert into kategori (nama,gambar) values (?,?)";
+            const nama = req.body.nama;
+            const harga = req.body.harga;
+            const stok = req.body.stok;
+            const deskripsi = req.body.deskripsi;
+            const id_kategori = req.body.id_kategori;
+            const date = date_time.substring(0, date_time.indexOf(','))
+            console.log(date)
+            const sql = "insert into produk (nama,harga,stok,deskripsi,id_kategori,gambar) values (?,?,?,?,?,?)";
             if (!file) {
                 res.status(400).send({
                     status: 400,
                     data: "No File is selected.",
                 });
             }
-            db.query(sql, [nama, file], (err, rows, fields) => {
+            db.query(sql, [nama,harga,stok,deskripsi,id_kategori,file], (err, rows, fields) => {
                 if (err) {
                     console.error('error connecting: ' + err);
                     return res.json({
@@ -39,10 +46,10 @@ module.exports = {
         console.log(date_time + ' | ' + req.method + ' => ' + req.hostname + req.path)
     },
 
-    //fungsi get semua kategori
-    kategori: (req, res) => {
+    //fungsi get semua produk
+    produk: (req, res) => {
         try {
-            const sql = "select * from kategori";
+            const sql = "SELECT produk.*,kategori.nama as kategori FROM produk,kategori WHERE produk.id_kategori = kategori.id;";
             db.query(sql, (err, rows, fields) => {
                 if (err) {
                     console.error('error connecting: ' + err);
@@ -67,11 +74,11 @@ module.exports = {
         console.log(date_time + ' | ' + req.method + ' => ' + req.hostname + req.path)
     },
 
-    //fungsi get spesifik kategori
-    get_kategori: (req, res) => {
+     //fungsi get spesifik produk
+     get_produk: (req, res) => {
         try {
-            const id = req.params.id
-            const sql = "select * from kategori where id =?";
+            const id = req.params.id;
+            const sql = "SELECT produk.*,kategori.nama as kategori FROM produk,kategori WHERE produk.id_kategori = kategori.id AND produk.id = ?";
             db.query(sql, [id], (err, rows, fields) => {
                 if (err) {
                     console.error('error connecting: ' + err);
@@ -96,19 +103,22 @@ module.exports = {
         console.log(date_time + ' | ' + req.method + ' => ' + req.hostname + req.path)
     },
 
-
-    //fungsi untuk add kategori
-    edit_kategori: (req, res) => {
-        var nama = req.body.nama
+     //fungsi untuk add produk
+     edit_produk: (req, res) => {
+        const nama = req.body.nama;
+        const harga = req.body.harga;
+        const stok = req.body.stok;
+        const deskripsi = req.body.deskripsi;
+        const id_kategori = req.body.id_kategori;
         var id = req.params.id;
-        var sql = "update kategori set nama = ? where id = ?"
-        var data = [nama, id]
+        var sql = "update produk set nama = ? , harga = ?, stok = ?, deskripsi =  ?, id_kategori = ? where id = ?"
+        var data = [nama,harga,stok,deskripsi,id_kategori,id]
         var file = null;
-        var sql_get = "select * from kategori where id =?";
+        var sql_get = "select * from produk where id =?";
         if (req.file != undefined) {
-            sql = "update kategori set nama = ? , gambar = ? where id = ?"
+            sql = "update produk set nama = ? , harga = ?, stok = ?, deskripsi =  ?, id_kategori = ?, gambar = ? where id = ?"
             file = req.file.filename;
-            data = [nama, file, id]
+            data = [nama,harga,stok,deskripsi,id_kategori,file,id]
             db.query(sql_get, [id], (err, rows, fields) => {
                 if (err) {
                     console.error('error connecting: ' + err);
@@ -126,34 +136,6 @@ module.exports = {
             })
         }
         try {
-            // const file = req.file.filename;
-            // const nama = req.body.nama
-            // const id = req.params.id;
-            // const sql = "update kategori set nama = ? , gambar = ? where id = ?"
-            // const sql_get = "select * from kategori where id =?";
-            // console.log(req.file)
-            // if (!file) {
-            //     res.status(400).send({
-            //         status: 400,
-            //         data: "No File is selected.",
-            //     });
-            // }
-
-            // db.query(sql_get, [id], (err, rows, fields) => {
-            //     if (err) {
-            //         console.error('error connecting: ' + err);
-            //         return res.json({
-            //             status: 500,
-            //             message: err,
-            //         });
-            //     }
-            //     gambar = rows[0].gambar
-            //     fs.unlink('./public/img/' + gambar, (err) => {
-            //         if (err) {
-            //             console.log(err)
-            //         }
-            //     });
-            // })
 
             db.query(sql, data, (err, rows, fields) => {
                 if (err) {
@@ -178,12 +160,13 @@ module.exports = {
         console.log(date_time + ' | ' + req.method + ' => ' + req.hostname + req.path)
     },
 
-     //fungsi untuk hapus kategori
-     delete_kategori:(req,res)=>{
+
+     //fungsi untuk hapus produk
+     delete_produk:(req,res)=>{
         try {
             const id = req.params.id;
-            const sql = 'delete from kategori where id = ?';
-            const sql_get = "select * from kategori where id =?";
+            const sql = 'delete from produk where id = ?';
+            const sql_get = "select * from produk where id =?";
             db.query(sql_get, [id], (err, rows, fields) => {
                 if (err) {
                     console.error('error connecting: ' + err);
@@ -220,4 +203,5 @@ module.exports = {
         }
         console.log(date_time +' | '+ req.method + ' => ' + req.hostname + req.path)
     }
+
 }

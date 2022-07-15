@@ -8,6 +8,9 @@ const roleController = require('./controller/role');
 const staffController = require('./controller/staff');
 const alamatController = require('./controller/alamat');
 const kategoriController = require('./controller/kategori');
+const beritaController = require('./controller/berita');
+const produkController = require('./controller/produk');
+const keranjangController = require('./controller/keranjang');
 const upload = require('./multer');
 
 //router users
@@ -35,9 +38,27 @@ router.route('/api/edit_alamat/:id').get(alamatController.get_alamat).post(multe
 router.route('/api/delete_alamat/:id').delete(alamatController.delete_alamat);
 router.route('/api/users/alamat/:id_users').get(alamatController.alamat_users);
 
-router.route('/api/kategori').post(multer({ storage: upload.upload() }).single("gambar"),kategoriController.add_kategori).get(kategoriController.kategori)
-router.route('/api/edit_kategori/:id').post(multer({ storage: upload.upload() }).single("gambar"),kategoriController.edit_kategori).get(kategoriController.get_kategori)
+//router kategori
+router.route('/api/kategori').post(upload.upload().single("gambar"),kategoriController.add_kategori).get(kategoriController.kategori)
+router.route('/api/edit_kategori/:id').post(upload.upload().single("gambar"),kategoriController.edit_kategori).get(kategoriController.get_kategori)
 router.route('/api/delete_kategori/:id').delete(kategoriController.delete_kategori);
-// app
+
+//router berita
+router.route('/api/berita').post(upload.upload().single("gambar"),beritaController.add_berita).get(beritaController.berita)
+router.route('/api/edit_berita/:id').post(upload.upload().single("gambar"),beritaController.edit_berita).get(beritaController.get_berita)
+router.route('/api/staff/edit_berita/:id_staff').get(beritaController.get_berita_by_users)
+router.route('/api/delete_berita/:id').delete(beritaController.delete_berita);
+
+//router produk
+router.route('/api/produk').post(upload.upload().single("gambar"),produkController.add_produk).get(produkController.produk)
+router.route('/api/edit_produk/:id').post(upload.upload().single("gambar"),produkController.edit_produk).get(produkController.get_produk)
+router.route('/api/delete_produk/:id').delete(produkController.delete_produk);
+
+//router keranjang
+router.route('/api/keranjang').post(multer().array(),keranjangController.add_keranjang)
+router.route('/api/get_keranjang/:id_users').get(keranjangController.get_keranjang)
+router.route('/api/delete_keranjang/:id').delete(keranjangController.delete_keranjang);
+
+
 
 module.exports = router

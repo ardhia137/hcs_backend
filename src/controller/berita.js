@@ -2,21 +2,24 @@ const db = require('../database');
 const fs = require('fs');
 var date_time = new Date().toLocaleString('en-GB', {
     timeZone: 'Asia/Jakarta'
-}).replace('/','-').replace('/','-')
+}).replace('/', '-').replace('/', '-')
 module.exports = {
-    //fungsi untuk add kategori
-    add_kategori: (req, res) => {
+    add_berita: (req, res) => {
         try {
             const file = req.file.filename;
-            const nama = req.body.nama
-            const sql = "insert into kategori (nama,gambar) values (?,?)";
+            const judul = req.body.judul;
+            const artikel = req.body.artikel;
+            const id_staff = req.body.id_staff;
+            const date = date_time.substring(0, date_time.indexOf(','))
+            console.log(date)
+            const sql = "insert into berita (judul,artikel,id_staff,tanggal,gambar) values (?,?,?,?,?)";
             if (!file) {
                 res.status(400).send({
                     status: 400,
                     data: "No File is selected.",
                 });
             }
-            db.query(sql, [nama, file], (err, rows, fields) => {
+            db.query(sql, [judul, artikel, id_staff, date, file], (err, rows, fields) => {
                 if (err) {
                     console.error('error connecting: ' + err);
                     return res.json({
@@ -39,10 +42,10 @@ module.exports = {
         console.log(date_time + ' | ' + req.method + ' => ' + req.hostname + req.path)
     },
 
-    //fungsi get semua kategori
-    kategori: (req, res) => {
+    //fungsi get semua berita
+    berita: (req, res) => {
         try {
-            const sql = "select * from kategori";
+            const sql = "select * from berita";
             db.query(sql, (err, rows, fields) => {
                 if (err) {
                     console.error('error connecting: ' + err);
@@ -67,11 +70,11 @@ module.exports = {
         console.log(date_time + ' | ' + req.method + ' => ' + req.hostname + req.path)
     },
 
-    //fungsi get spesifik kategori
-    get_kategori: (req, res) => {
+    //fungsi get spesifik berita
+    get_berita: (req, res) => {
         try {
-            const id = req.params.id
-            const sql = "select * from kategori where id =?";
+            const id = req.params.id;
+            const sql = "select * from berita where id = ?";
             db.query(sql, [id], (err, rows, fields) => {
                 if (err) {
                     console.error('error connecting: ' + err);
@@ -96,19 +99,19 @@ module.exports = {
         console.log(date_time + ' | ' + req.method + ' => ' + req.hostname + req.path)
     },
 
-
     //fungsi untuk add kategori
-    edit_kategori: (req, res) => {
-        var nama = req.body.nama
+    edit_berita: (req, res) => {
+        var judul = req.body.judul;
+        var artikel = req.body.artikel;
         var id = req.params.id;
-        var sql = "update kategori set nama = ? where id = ?"
-        var data = [nama, id]
+        var sql = "update berita set judul = ? , artikel = ? where id = ?"
+        var data = [judul, artikel, id]
         var file = null;
-        var sql_get = "select * from kategori where id =?";
+        var sql_get = "select * from berita where id =?";
         if (req.file != undefined) {
-            sql = "update kategori set nama = ? , gambar = ? where id = ?"
+            sql = "update berita set judul = ? , artikel = ?, gambar = ? where id = ?"
             file = req.file.filename;
-            data = [nama, file, id]
+            data = [judul, artikel, file, id]
             db.query(sql_get, [id], (err, rows, fields) => {
                 if (err) {
                     console.error('error connecting: ' + err);
@@ -126,34 +129,6 @@ module.exports = {
             })
         }
         try {
-            // const file = req.file.filename;
-            // const nama = req.body.nama
-            // const id = req.params.id;
-            // const sql = "update kategori set nama = ? , gambar = ? where id = ?"
-            // const sql_get = "select * from kategori where id =?";
-            // console.log(req.file)
-            // if (!file) {
-            //     res.status(400).send({
-            //         status: 400,
-            //         data: "No File is selected.",
-            //     });
-            // }
-
-            // db.query(sql_get, [id], (err, rows, fields) => {
-            //     if (err) {
-            //         console.error('error connecting: ' + err);
-            //         return res.json({
-            //             status: 500,
-            //             message: err,
-            //         });
-            //     }
-            //     gambar = rows[0].gambar
-            //     fs.unlink('./public/img/' + gambar, (err) => {
-            //         if (err) {
-            //             console.log(err)
-            //         }
-            //     });
-            // })
 
             db.query(sql, data, (err, rows, fields) => {
                 if (err) {
@@ -178,12 +153,41 @@ module.exports = {
         console.log(date_time + ' | ' + req.method + ' => ' + req.hostname + req.path)
     },
 
-     //fungsi untuk hapus kategori
-     delete_kategori:(req,res)=>{
+    //fungsi get spesifik berita by users
+    get_berita_by_users: (req, res) => {
+        try {
+            const id_staff = req.params.id_staff;
+            const sql = "select * from berita where id_staff = ?";
+            db.query(sql, [id_staff], (err, rows, fields) => {
+                if (err) {
+                    console.error('error connecting: ' + err);
+                    return res.json({
+                        status: 500,
+                        message: err,
+                    });
+                }
+                res.json({
+                    status: res.statusCode,
+                    message: 'suksess',
+                    data: rows
+                });
+
+            })
+        } catch (error) {
+            res.json({
+                status: res.statusCode,
+                message: error,
+            });
+        }
+        console.log(date_time + ' | ' + req.method + ' => ' + req.hostname + req.path)
+    },
+
+    //fungsi untuk hapus berita
+    delete_berita:(req,res)=>{
         try {
             const id = req.params.id;
-            const sql = 'delete from kategori where id = ?';
-            const sql_get = "select * from kategori where id =?";
+            const sql = 'delete from berita where id = ?';
+            const sql_get = "select * from berita where id =?";
             db.query(sql_get, [id], (err, rows, fields) => {
                 if (err) {
                     console.error('error connecting: ' + err);
