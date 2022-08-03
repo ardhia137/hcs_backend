@@ -15,7 +15,7 @@ module.exports = {
             const deskripsi = req.body.deskripsi;
             const id_kategori = req.body.id_kategori;
             const date = date_time.substring(0, date_time.indexOf(','))
-            console.log(date)
+            // console.log(date)
             const sql = "insert into produk (nama,harga,stok,deskripsi,id_kategori,gambar) values (?,?,?,?,?,?)";
             if (!file) {
                 res.status(400).send({
@@ -49,8 +49,9 @@ module.exports = {
     //fungsi get semua produk
     produk: (req, res) => {
         try {
-            const sql = "SELECT produk.*,kategori.nama as kategori FROM produk,kategori WHERE produk.id_kategori = kategori.id;";
-            db.query(sql, (err, rows, fields) => {
+            const limit = req.params.limit;
+            const sql = "SELECT produk.*, kategori.nama as kategori FROM produk,kategori WHERE produk.id_kategori = kategori.id ORDER by id DESC LIMIT ? ";
+            db.query(sql,parseInt(limit), (err, rows, fields) => {
                 if (err) {
                     console.error('error connecting: ' + err);
                     return res.json({

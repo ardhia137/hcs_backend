@@ -16,20 +16,6 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(express.static('public'));
 app.use(router)
-// const uploadd = multer({ dest: 'uploads/' })
-// const upload = multer({ storage: diskStorage })
-// app.put("/contact/upload",multer({ storage: upload.upload() }).single("test"),(req, res) => {
-//     console.log('asd')
-//     const file = req.file;
-//     console.log(file);
-//     if (!file) {
-//       res.status(400).send({
-//         status: false,
-//         data: "No File is selected.",
-//       });
-//     }
-//   }
-// );
 app.listen(port, () => {
   console.log(`Server has been running listening on port ${port}`)
 })

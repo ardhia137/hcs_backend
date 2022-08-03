@@ -15,6 +15,8 @@ const upload = require('./multer');
 
 //router users
 router.route('/api/auth').post(multer().array(),usersController.auth);
+router.route('/api/register').post(multer().array(),usersController.register);
+router.route('/api/request_otp').post(multer().array(),usersController.request_otp);
 router.route('/api/complete_auth').post(multer().array(),usersController.complete_auth);
 router.route('/api/change_password').post(multer().array(),usersController.change_password);
 router.route('/api/edit_user/:id').get(usersController.get_user).post(multer().array(),usersController.edit_user);
@@ -39,8 +41,11 @@ router.route('/api/delete_alamat/:id').delete(alamatController.delete_alamat);
 router.route('/api/users/alamat/:id_users').get(alamatController.alamat_users);
 
 //router kategori
-router.route('/api/kategori').post(upload.upload().single("gambar"),kategoriController.add_kategori).get(kategoriController.kategori)
-router.route('/api/edit_kategori/:id').post(upload.upload().single("gambar"),kategoriController.edit_kategori).get(kategoriController.get_kategori)
+// router.route('/api/kategori').post(upload.upload().single("gambar"),kategoriController.add_kategori).get(kategoriController.kategori)
+// router.route('/api/edit_kategori/:id').post(upload.upload().single("gambar"),kategoriController.edit_kategori).get(kategoriController.get_kategori)
+// router.route('/api/delete_kategori/:id').delete(kategoriController.delete_kategori);
+router.route('/api/kategori').post(multer().array(),kategoriController.add_kategori).get(kategoriController.kategori)
+router.route('/api/edit_kategori/:id').post(multer().array(),kategoriController.edit_kategori).get(kategoriController.get_kategori)
 router.route('/api/delete_kategori/:id').delete(kategoriController.delete_kategori);
 
 //router berita
@@ -50,7 +55,8 @@ router.route('/api/staff/edit_berita/:id_staff').get(beritaController.get_berita
 router.route('/api/delete_berita/:id').delete(beritaController.delete_berita);
 
 //router produk
-router.route('/api/produk').post(upload.upload().single("gambar"),produkController.add_produk).get(produkController.produk)
+router.route('/api/produk').post(upload.upload().single("gambar"),produkController.add_produk)
+router.route('/api/produk/:limit').get(produkController.produk)
 router.route('/api/edit_produk/:id').post(upload.upload().single("gambar"),produkController.edit_produk).get(produkController.get_produk)
 router.route('/api/delete_produk/:id').delete(produkController.delete_produk);
 
