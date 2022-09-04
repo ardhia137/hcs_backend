@@ -57,12 +57,15 @@ router.route('/api/delete_berita/:id').delete(beritaController.delete_berita);
 //router produk
 router.route('/api/produk').post(upload.upload().single("gambar"),produkController.add_produk)
 router.route('/api/produk/:limit').get(produkController.produk)
+router.route('/api/produk/search/:search').get(produkController.produk_search)
+router.route('/api/produk/:id_kategori/:id_produk/:limit').get(produkController.produk_by_kategori)
 router.route('/api/edit_produk/:id').post(upload.upload().single("gambar"),produkController.edit_produk).get(produkController.get_produk)
 router.route('/api/delete_produk/:id').delete(produkController.delete_produk);
 
 //router keranjang
 router.route('/api/keranjang').post(multer().array(),keranjangController.add_keranjang)
-router.route('/api/get_keranjang/:id_users').get(keranjangController.get_keranjang)
+router.route('/api/get_keranjang').post(keranjangController.get_keranjang)
+router.route('/api/update_keranjang').post(keranjangController.update_keranajang)
 router.route('/api/delete_keranjang/:id').delete(keranjangController.delete_keranjang);
 
 
