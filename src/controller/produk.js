@@ -4,9 +4,10 @@ var date_time = new Date().toLocaleString('en-GB', {
     timeZone: 'Asia/Jakarta'
 }).replace('/', '-').replace('/', '-')
 module.exports = {
+
     //fungsi untuk add produk
     add_produk: (req, res) => {
-        //fungsi untuk add berita
+
         try {
             const file = req.file.filename;
             const nama = req.body.nama;
@@ -82,7 +83,7 @@ module.exports = {
             const id_kategori = req.params.id_kategori;
             const id_produk = req.params.id_produk;
             var sql = "SELECT produk.*, kategori.nama as kategori FROM produk,kategori WHERE produk.id_kategori = kategori.id and produk.id_kategori = ? and produk.id != ? ORDER by id DESC LIMIT ? ";
-            var data = [id_kategori,id_produk, parseInt(limit)]
+            var data = [id_kategori, id_produk, parseInt(limit)]
             if (id_produk == 0) {
                 sql = "SELECT produk.*, kategori.nama as kategori FROM produk,kategori WHERE produk.id_kategori = kategori.id and produk.id_kategori = ? ORDER by id DESC LIMIT ? ";
                 data = [id_kategori, parseInt(limit)];
@@ -101,7 +102,7 @@ module.exports = {
                     message: 'suksess',
                     data: rows
                 });
-                
+
 
             })
         } catch (error) {
@@ -117,8 +118,10 @@ module.exports = {
         try {
             // const limit = req.params.limit;
             const search = req.params.search;
-            var sql = "SELECT produk.*, kategori.nama as kategori FROM produk,kategori WHERE produk.id_kategori = kategori.id AND produk.nama like ? ;";
-            var data = ['%'+search+'%']
+            // var sql = "SELECT produk.*, kategori.nama as kategori FROM produk,kategori WHERE produk.id_kategori = kategori.id AND produk.nama like ? ;";
+            // var data = ['%'+search+'%']
+            var sql = "SELECT produk.*, kategori.nama as kategori FROM produk,kategori WHERE produk.id_kategori = kategori.id AND kategori.nama = ? ";
+            var data = [search]
             // console.log(data);
             db.query(sql, data, (err, rows, fields) => {
                 if (err) {
@@ -128,25 +131,45 @@ module.exports = {
                         message: err,
                     });
                 }
-                res.json({
-                    status: res.statusCode,
-                    message: 'suksess',
-                    data: rows
-                });
-                // if(rows.length>0){
-                //     res.json({
-                //         status: res.statusCode,
-                //         message: 'suksess',
-                //         data: rows
-                //     });
-                // }else{
-                //     res.json({
-                //         status: 404,
-                //         message: 'tidak ada data',
-                //     });
-                // }
-                
-                
+                // res.json({
+                //     status: res.statusCode,
+                //     message: 'suksess',
+                //     data: rows
+                // });
+                if (rows.length > 0) {
+                    res.json({
+                        status: res.statusCode,
+                        message: 'suksess',
+                        data: rows
+                    });
+                } else {
+                    sql = "SELECT produk.*, kategori.nama as kategori FROM produk,kategori WHERE produk.id_kategori = kategori.id AND produk.nama like ? ;";
+                    data = ['%'+search+'%']
+                    db.query(sql, data, (err, rows, fields) => {
+                        if (err) {
+                            console.error('error connecting: ' + err);
+                            return res.json({
+                                status: 500,
+                                message: err,
+                            });
+                        }
+                        if (rows.length > 0) {
+                            res.json({
+                                status: res.statusCode,
+                                message: 'suksess',
+                                data: rows
+                            });
+                        } else{
+                            return res.json({
+                                status: 404,
+                                message: "data tidak ditemukan",
+                            });
+                        }
+                        
+                    })
+                }
+
+
 
             })
         } catch (error) {
